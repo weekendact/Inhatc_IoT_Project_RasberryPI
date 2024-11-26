@@ -18,22 +18,21 @@ app = Flask(__name__)
 @app.route("/action", methods=["POST"])
 def action():
     data = request.json
+    print(f"요청 데이터: {data}")  # 받은 데이터를 출력해 디버깅
     if data and data.get("status") == "detected":
-        # LED 켜기
+        # 감지된 경우 LED와 모터 켜기
         GPIO.output(LED_PIN, GPIO.HIGH)
-        # 모터 작동 (예: 시계 방향 회전)
         GPIO.output(MOTOR_PIN1, GPIO.HIGH)
         GPIO.output(MOTOR_PIN2, GPIO.LOW)
-        print("사람 감지: LED 켜짐, 모터 작동 중")
+        print("사람 감지: LED와 모터 작동")
     else:
-        # LED 끄기
+        # 감지되지 않은 경우 LED와 모터 끄기
         GPIO.output(LED_PIN, GPIO.LOW)
-        # 모터 정지
         GPIO.output(MOTOR_PIN1, GPIO.LOW)
         GPIO.output(MOTOR_PIN2, GPIO.LOW)
-        print("감지되지 않음: LED 꺼짐, 모터 정지")
-
+        print("감지되지 않음: LED와 모터 꺼짐")
     return "OK", 200
+
 
 if __name__ == "__main__":
     try:
@@ -41,4 +40,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("종료 중...")
     finally:
+        GPIO.output(LED_PIN, GPIO.LOW)
+        GPIO.output(MOTOR_PIN1, GPIO.LOW)
+        GPIO.output(MOTOR_PIN2, GPIO.LOW)
         GPIO.cleanup()
+
